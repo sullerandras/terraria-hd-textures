@@ -75,10 +75,28 @@ function createRelease() {
     zip -r ../$out_file README.txt Images
     cd ..
 }
-# extractPngsFromTerraria $TERRARIA_CONTENT_FOLDER $EXTRACTED_FOLDER
-# downscalePngs $EXTRACTED_FOLDER $DOWNSCALED_FOLDER
-# removeSeparators $DOWNSCALED_FOLDER $NO_SEPARATORS_FOLDER
-# magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER
-refillMissingPixels $MAGNIFIED_FOLDER $REFILLED_FOLDER
+function horizontalFlipImages() {
+    echo "horizontal flip images $1 => $2"
+    mkdir -p $2
+    mkdir -p $2/UI
+    wine tools/flip_horizontally.exe $1 $2
+    wine tools/flip_horizontally.exe $1/UI $2/UI
+}
+function mergeNormalAndFlippedImages() {
+    echo "merge normal magnified and flipped magnified images $1 + $2 => $3"
+    mkdir -p $3
+    mkdir -p $3/UI
+    wine tools/merge_images.exe $1 $2 $3
+    wine tools/merge_images.exe $1/UI $2/UI $3/UI
+}
+extractPngsFromTerraria $TERRARIA_CONTENT_FOLDER $EXTRACTED_FOLDER
+downscalePngs $EXTRACTED_FOLDER $DOWNSCALED_FOLDER
+removeSeparators $DOWNSCALED_FOLDER $NO_SEPARATORS_FOLDER
+horizontalFlipImages $NO_SEPARATORS_FOLDER $NO_SEPARATORS_FOLDER-hflip
+magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER
+magnifyPngs $NO_SEPARATORS_FOLDER-hflip $MAGNIFIED_FOLDER-hflip
+horizontalFlipImages $MAGNIFIED_FOLDER-hflip $MAGNIFIED_FOLDER-hflip-hflip
+mergeNormalAndFlippedImages $MAGNIFIED_FOLDER $MAGNIFIED_FOLDER-hflip-hflip $MAGNIFIED_FOLDER-merged
+refillMissingPixels $MAGNIFIED_FOLDER-merged $REFILLED_FOLDER
 pngsToXnbs $REFILLED_FOLDER $TARGET_TERRARIA_CONTENT_FOLDER
-# createRelease v0.2 $TARGET_TERRARIA_CONTENT_FOLDER $RELEASE_FOLDER
+createRelease v0.3 $TARGET_TERRARIA_CONTENT_FOLDER $RELEASE_FOLDER
