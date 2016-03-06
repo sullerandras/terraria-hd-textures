@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 
-TERRARIA_CONTENT_FOLDER=Terraria.v1.3.0.8-read-only/Content
+SOURCE_XNB_FOLDER=Terraria.v1.3.0.8-read-only/Content/Images
 EXTRACTED_FOLDER=temp1
 DOWNSCALED_FOLDER=temp2
 NO_SEPARATORS_FOLDER=temp3
 MAGNIFIED_FOLDER=temp4
 REFILLED_FOLDER=temp5
 RELEASE_FOLDER=temp6-release
-TARGET_TERRARIA_CONTENT_FOLDER=Terraria.v1.3.0.8/Content
+TARGET_XNB_FOLDER=Terraria.v1.3.0.8/Content/Images
 
 function extractPngsFromTerraria() {
     echo "calling TExtract $1 => $2"
     mkdir -p $2
     mkdir -p $2/UI
-    java -jar "tools/TExtract 1.6.0.jar" --outputDirectory $2 $1/Images/*.xnb
-    java -jar "tools/TExtract 1.6.0.jar" --outputDirectory $2/UI $1/Images/UI/*.xnb
+    java -jar "tools/TExtract 1.6.0.jar" --outputDirectory $2 $1/*.xnb
+    java -jar "tools/TExtract 1.6.0.jar" --outputDirectory $2/UI $1/UI/*.xnb
 }
 function downscalePngs() {
     echo "downscaling images $1 => $2"
@@ -34,29 +34,26 @@ function magnifyPngs() {
     echo "magnifying images $1 => $2"
     mkdir -p $2
     mkdir -p $2/UI
-    RESIZE_METHOD="XBRz 2x(vbounds=wrap,hbounds=wrap)"
-
-    for filename in `ls $1 | grep -i png`; do
-      echo /load "$1/$filename" /resize auto "\"$RESIZE_METHOD\"" /save "$2/$filename"
-    done > test.scr
-    for filename in `ls $1/UI | grep -i png`; do
-      echo /load "$1/UI/$filename" /resize auto "\"$RESIZE_METHOD\"" /save "$2/UI/$filename"
-    done >> test.scr
-    wine tools/ImageResizer-r133.exe /script test.scr
+    rsync -ax --delete-after $1/*.png $2/Others/
+    mkdir -p $2/Items
+    mv $2/Others/Item_* $2/Items/
+    wine tools/image_filter.exe "XBR" $2/Items $2
+    wine tools/image_filter.exe "XBRz" $2/Others $2
+    wine tools/image_filter.exe "XBRz" $1/UI $2/UI
 }
 function refillMissingPixels() {
-    echo "refilling missing pixels in Walls and Tiles $1 => $2"
-    mkdir -p $2
-    mkdir -p $2/UI
-    wine tools/refill_missing_pixels.exe $1 $2
-    wine tools/refill_missing_pixels.exe $1/UI $2/UI
+    echo "refilling missing pixels in Walls and Tiles $2 => $3"
+    mkdir -p $3
+    mkdir -p $3/UI
+    wine tools/refill_missing_pixels.exe $1 $2 $3
+    wine tools/refill_missing_pixels.exe $1/UI $2/UI $3/UI
 }
 function pngsToXnbs() {
     echo "converting to XNB's $1 => $2"
-    mkdir -p $2/Images
-    mkdir -p $2/Images/UI
-    wine tools/png_to_xnb.exe $1 $2/Images
-    wine tools/png_to_xnb.exe $1/UI $2/Images/UI
+    mkdir -p $2
+    mkdir -p $2/UI
+    wine tools/png_to_xnb.exe $1 $2
+    wine tools/png_to_xnb.exe $1/UI $2/UI
 }
 function createRelease() {
     version=$1
@@ -64,9 +61,11 @@ function createRelease() {
     echo "Creating zip file Images-$version.zip with all XNB's"
     mkdir -p $3/Images
     rm -f $out_file
-    rsync -ax --delete-after $2/Images/ $3/Images/
+    rsync -ax --delete-after $2 $3
     rm -rf --preserve-root $3/Images/Backgrounds
     rm -rf --preserve-root $3/Images/Misc
+    rm -rf --preserve-root $3/Images/UI/WorldGen
+    rm -rf --preserve-root $3/Images/UI/Button*
     echo "Enhanced version of the textures of Terraria 1.3.0.8" > $3/README.txt
     echo "" >> $3/README.txt
     echo "Crated by Andras Suller, `date +%F`, $version." >> $3/README.txt
@@ -75,28 +74,10 @@ function createRelease() {
     zip -r ../$out_file README.txt Images
     cd ..
 }
-function horizontalFlipImages() {
-    echo "horizontal flip images $1 => $2"
-    mkdir -p $2
-    mkdir -p $2/UI
-    wine tools/flip_horizontally.exe $1 $2
-    wine tools/flip_horizontally.exe $1/UI $2/UI
-}
-function mergeNormalAndFlippedImages() {
-    echo "merge normal magnified and flipped magnified images $1 + $2 => $3"
-    mkdir -p $3
-    mkdir -p $3/UI
-    wine tools/merge_images.exe $1 $2 $3
-    wine tools/merge_images.exe $1/UI $2/UI $3/UI
-}
-extractPngsFromTerraria $TERRARIA_CONTENT_FOLDER $EXTRACTED_FOLDER
+extractPngsFromTerraria $SOURCE_XNB_FOLDER $EXTRACTED_FOLDER
 downscalePngs $EXTRACTED_FOLDER $DOWNSCALED_FOLDER
 removeSeparators $DOWNSCALED_FOLDER $NO_SEPARATORS_FOLDER
-horizontalFlipImages $NO_SEPARATORS_FOLDER $NO_SEPARATORS_FOLDER-hflip
 magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER
-magnifyPngs $NO_SEPARATORS_FOLDER-hflip $MAGNIFIED_FOLDER-hflip
-horizontalFlipImages $MAGNIFIED_FOLDER-hflip $MAGNIFIED_FOLDER-hflip-hflip
-mergeNormalAndFlippedImages $MAGNIFIED_FOLDER $MAGNIFIED_FOLDER-hflip-hflip $MAGNIFIED_FOLDER-merged
-refillMissingPixels $MAGNIFIED_FOLDER-merged $REFILLED_FOLDER
-pngsToXnbs $REFILLED_FOLDER $TARGET_TERRARIA_CONTENT_FOLDER
-createRelease v0.3 $TARGET_TERRARIA_CONTENT_FOLDER $RELEASE_FOLDER
+refillMissingPixels $EXTRACTED_FOLDER $MAGNIFIED_FOLDER $REFILLED_FOLDER
+pngsToXnbs $REFILLED_FOLDER $TARGET_XNB_FOLDER
+createRelease v0.4 $TARGET_XNB_FOLDER $RELEASE_FOLDER

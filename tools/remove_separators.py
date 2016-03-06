@@ -115,7 +115,10 @@ CLASS_SEPARATORS = {
     'tiles-162x36': SEP(9),
     'tiles-72x18': SEP(9),
     'tiles-36x18': SEP(9),
-    'tiles-17x45': SEP(9),
+    'tiles-17x45': {
+        'column': [],
+        'row': [],
+    },
     'tiles-36x684': SEP(9),
     'tiles-27x18': SEP(9),
     'tiles-54x36': SEP(9),
