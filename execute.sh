@@ -37,9 +37,15 @@ function magnifyPngs() {
     rsync -ax --delete-after $1/*.png $2/Others/
     mkdir -p $2/Items
     mv $2/Others/Item_* $2/Items/
-    wine tools/image_filter.exe "XBR" $2/Items $2
-    wine tools/image_filter.exe "XBRz" $2/Others $2
-    wine tools/image_filter.exe "XBRz" $1/UI $2/UI
+    if [ "$3" = "blend" ]; then
+        wine tools/image_filter.exe "XBR" $2/Items $2
+        wine tools/image_filter.exe "XBRz" $2/Others $2
+        wine tools/image_filter.exe "XBRz" $1/UI $2/UI
+    else
+        wine tools/image_filter.exe "XBR-NoBlend" $2/Items $2
+        wine tools/image_filter.exe "XBR-NoBlend" $2/Others $2
+        wine tools/image_filter.exe "XBR-NoBlend" $1/UI $2/UI
+    fi
 }
 function refillMissingPixels() {
     echo "refilling missing pixels in Walls and Tiles $2 => $3"
@@ -77,7 +83,7 @@ function createRelease() {
 extractPngsFromTerraria $SOURCE_XNB_FOLDER $EXTRACTED_FOLDER
 downscalePngs $EXTRACTED_FOLDER $DOWNSCALED_FOLDER
 removeSeparators $DOWNSCALED_FOLDER $NO_SEPARATORS_FOLDER
-magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER
+magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER "blend"
 refillMissingPixels $EXTRACTED_FOLDER $MAGNIFIED_FOLDER $REFILLED_FOLDER
 pngsToXnbs $REFILLED_FOLDER $TARGET_XNB_FOLDER
 createRelease v0.4 $TARGET_XNB_FOLDER $RELEASE_FOLDER
