@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 
-SOURCE_XNB_FOLDER=Terraria.v1.3.0.8-read-only/Content/Images
+SOURCE_XNB_FOLDER=Terraria.v1.3.1-read-only/Content/Images
 EXTRACTED_FOLDER=temp1
 DOWNSCALED_FOLDER=temp2
 NO_SEPARATORS_FOLDER=temp3
 MAGNIFIED_FOLDER=temp4
 REFILLED_FOLDER=temp5
 RELEASE_FOLDER=temp6-release
-TARGET_XNB_FOLDER=Terraria.v1.3.0.8/Content/Images
+TARGET_XNB_FOLDER=Terraria.v1.3.1/Content/Images
 
 function extractPngsFromTerraria() {
     echo "calling TExtract $1 => $2"
     mkdir -p $2
     mkdir -p $2/UI
-    java -jar "tools/TExtract 1.6.0.jar" --outputDirectory $2 $1/*.xnb
-    java -jar "tools/TExtract 1.6.0.jar" --outputDirectory $2/UI $1/UI/*.xnb
+    java -jar "tools/TExtract 1.6.0.jar" --outputDirectory $2.temp $1
+    mv $2.temp/Images $2
 }
 function downscalePngs() {
     echo "downscaling images $1 => $2"
@@ -68,10 +68,10 @@ function createRelease() {
     mkdir -p $3/Images
     rm -f $out_file
     rsync -ax --delete-after $2 $3
-    rm -rf --preserve-root $3/Images/Backgrounds
-    rm -rf --preserve-root $3/Images/Misc
-    rm -rf --preserve-root $3/Images/UI/WorldGen
-    rm -rf --preserve-root $3/Images/UI/Button*
+    rm -rf $3/Images/Backgrounds
+    rm -rf $3/Images/Misc
+    rm -rf $3/Images/UI/WorldGen
+    rm -rf $3/Images/UI/Button*
     echo "Enhanced version of the textures of Terraria 1.3.0.8" > $3/README.txt
     echo "" >> $3/README.txt
     echo "Crated by Andras Suller, `date +%F`, $version." >> $3/README.txt
@@ -86,4 +86,5 @@ removeSeparators $DOWNSCALED_FOLDER $NO_SEPARATORS_FOLDER
 magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER "blend"
 refillMissingPixels $EXTRACTED_FOLDER $MAGNIFIED_FOLDER $REFILLED_FOLDER
 pngsToXnbs $REFILLED_FOLDER $TARGET_XNB_FOLDER
-createRelease v0.4 $TARGET_XNB_FOLDER $RELEASE_FOLDER
+createRelease v0.5-1.3.1 $TARGET_XNB_FOLDER $RELEASE_FOLDER
+# createRelease v0.5-noblend-1.3.1 $TARGET_XNB_FOLDER $RELEASE_FOLDER
