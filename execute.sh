@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 
-SOURCE_XNB_FOLDER=Terraria.v1.3.1-read-only/Content/Images
+SOURCE_XNB_FOLDER=Terraria.v1.3.2-read-only/Content/Images
 EXTRACTED_FOLDER=temp1
 DOWNSCALED_FOLDER=temp2
 NO_SEPARATORS_FOLDER=temp3
 MAGNIFIED_FOLDER=temp4
 REFILLED_FOLDER=temp5
 RELEASE_FOLDER=temp6-release
-TARGET_XNB_FOLDER=Terraria.v1.3.1/Content/Images
+TARGET_XNB_FOLDER=Terraria.v1.3.2/Content/Images
 
 function extractPngsFromTerraria() {
     echo "calling TExtract $1 => $2"
-    mkdir -p $2
-    mkdir -p $2/UI
     java -jar "tools/TExtract 1.6.0.jar" --outputDirectory $2.temp $1
     mv $2.temp/Images $2
+    rm -rf $2.temp
 }
 function downscalePngs() {
     echo "downscaling images $1 => $2"
@@ -38,11 +37,11 @@ function magnifyPngs() {
     mkdir -p $2/Items
     mv $2/Others/Item_* $2/Items/
     if [ "$3" = "blend" ]; then
-        wine tools/image_filter.exe "XBR" $2/Items $2
+        wine tools/image_filter.exe "XBR" -wrap $2/Items $2
         wine tools/image_filter.exe "XBRz" $2/Others $2
         wine tools/image_filter.exe "XBRz" $1/UI $2/UI
     else
-        wine tools/image_filter.exe "XBR-NoBlend" $2/Items $2
+        wine tools/image_filter.exe "XBR-NoBlend" -wrap $2/Items $2
         wine tools/image_filter.exe "XBR-NoBlend" $2/Others $2
         wine tools/image_filter.exe "XBR-NoBlend" $1/UI $2/UI
     fi
@@ -72,7 +71,7 @@ function createRelease() {
     rm -rf $3/Images/Misc
     rm -rf $3/Images/UI/WorldGen
     rm -rf $3/Images/UI/Button*
-    echo "Enhanced version of the textures of Terraria 1.3.0.8" > $3/README.txt
+    echo "Enhanced version of the textures of Terraria 1.3.2" > $3/README.txt
     echo "" >> $3/README.txt
     echo "Crated by Andras Suller, `date +%F`, $version." >> $3/README.txt
     echo "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> $3/README.txt
@@ -80,11 +79,12 @@ function createRelease() {
     zip -r ../$out_file README.txt Images
     cd ..
 }
+#SOURCE_XNB_FOLDER="/home/andras/Downloads/Terraria_Soft_Pack_1-10-2016"
 extractPngsFromTerraria $SOURCE_XNB_FOLDER $EXTRACTED_FOLDER
 downscalePngs $EXTRACTED_FOLDER $DOWNSCALED_FOLDER
 removeSeparators $DOWNSCALED_FOLDER $NO_SEPARATORS_FOLDER
 magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER "blend"
 refillMissingPixels $EXTRACTED_FOLDER $MAGNIFIED_FOLDER $REFILLED_FOLDER
 pngsToXnbs $REFILLED_FOLDER $TARGET_XNB_FOLDER
-createRelease v0.5-1.3.1 $TARGET_XNB_FOLDER $RELEASE_FOLDER
-# createRelease v0.5-noblend-1.3.1 $TARGET_XNB_FOLDER $RELEASE_FOLDER
+createRelease v0.6-1.3.2 $TARGET_XNB_FOLDER $RELEASE_FOLDER
+createRelease v0.6-noblend-1.3.2 $TARGET_XNB_FOLDER $RELEASE_FOLDER

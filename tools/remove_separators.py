@@ -275,7 +275,7 @@ CLASS_SEPARATORS = {
     },
     'tiles-72x605': {
         'column': SEP9,
-        'row':    lambda x: x % 18 == 8
+        'row':    lambda x: (x < 566 and x % 18 == 8) or (x >= 566 and x - 1 % 18 == 8) # row 567 is the empty row instead of 566
     },
     'tiles-27x196': {
         'column': SEP9,
@@ -362,6 +362,10 @@ CLASS_SEPARATORS = {
     'wall-234x180': lambda x: x % 18 >= 16,
     'wall-234x126': lambda x: x % 18 >= 16,
     'wires-45x36': SEP(9),
+    'wires-20x20': [],
+    'wires-16x16': [],
+    'wires-8x8': [],
+    'wiresnew-144x144': SEP(9),
     'wraitheyes-13x100': [],
     'xmas-32x64': [],
     'xmas-198x65': { 'column': SEP(33), 'row': [64] },
@@ -489,7 +493,7 @@ def remove_separators(input_filename, clazz, pixelarray):
             if not pixelarray.isTransparent(x, y):
                 pixels.add(str(pixelarray.getPixelAt(x, y)))
                 if len(pixels) >= 3:
-                    if ntpath.basename(input_filename) in ['Tiles_17.png', 'Tiles_73.png', 'Tiles_126.png', 'Tiles_203.png', 'Tiles_229.png', 'Tiles_274.png', 'Tiles_32.png', 'Tiles_352.png', 'Tiles_69.png', 'Wall_60.png', 'Wall_73.png']:
+                    if ntpath.basename(input_filename) in ['Tiles_17.png', 'Tiles_73.png', 'Tiles_126.png', 'Tiles_203.png', 'Tiles_229.png', 'Tiles_274.png', 'Tiles_32.png', 'Tiles_352.png', 'Tiles_443.png', 'Tiles_69.png', 'Wall_60.png', 'Wall_73.png']:
                         # print('Wrong row index in file %s: %s, colors: %s' % (ntpath.basename(input_filename), y, pixels))
                         pixels = set()
                     else:
@@ -671,4 +675,3 @@ else:
 
 # import cProfile
 # cProfile.run('remove_separators_from_all_tiles()', sort=1)
-
