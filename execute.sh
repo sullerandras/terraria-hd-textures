@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-SOURCE_XNB_FOLDER=Terraria.v1.3.4.2-read-only/Content/Images
+SOURCE_XNB_FOLDER=Terraria.v1.3.5.1-read-only/Content/Images
 EXTRACTED_FOLDER=temp1
 DOWNSCALED_FOLDER=temp2
 NO_SEPARATORS_FOLDER=temp3
 MAGNIFIED_FOLDER=temp4
 REFILLED_FOLDER=temp5
 RELEASE_FOLDER=temp6-release
-TARGET_XNB_FOLDER=Terraria.v1.3.4.2/Content/Images
+TARGET_XNB_FOLDER=Terraria.v1.3.5.1/Content/Images
 
 function extractPngsFromTerraria() {
     echo "calling TExtract $1 => $2"
@@ -73,7 +73,7 @@ function createRelease() {
     rm -rf $3/Images/Misc
     rm -rf $3/Images/UI/WorldGen
     rm -rf $3/Images/UI/Button*
-    echo "Enhanced version of the textures of Terraria 1.3.4.2" > $3/README.txt
+    echo "Enhanced version of the textures of Terraria 1.3.5.1" > $3/README.txt
     echo "" >> $3/README.txt
     echo "Crated by Andras Suller, `date +%F`, $version." >> $3/README.txt
     echo "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> $3/README.txt
@@ -88,5 +88,5 @@ removeSeparators $DOWNSCALED_FOLDER $NO_SEPARATORS_FOLDER
 magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER "blend"
 refillMissingPixels $EXTRACTED_FOLDER $MAGNIFIED_FOLDER $REFILLED_FOLDER
 pngsToXnbs $REFILLED_FOLDER $TARGET_XNB_FOLDER
-createRelease v0.8-1.3.4.2 $TARGET_XNB_FOLDER $RELEASE_FOLDER
+createRelease v0.9-1.3.5.1 $TARGET_XNB_FOLDER $RELEASE_FOLDER
 # createRelease v0.8-noblend-1.3.4.2 $TARGET_XNB_FOLDER $RELEASE_FOLDER
