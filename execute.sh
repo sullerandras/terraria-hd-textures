@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -e # exit on error
+set -x # echo executed lines
+
 SOURCE_XNB_FOLDER=Terraria.v1.3.5.1-read-only/Content/Images
 EXTRACTED_FOLDER=temp1
 DOWNSCALED_FOLDER=temp2
@@ -8,6 +11,21 @@ MAGNIFIED_FOLDER=temp4
 REFILLED_FOLDER=temp5
 RELEASE_FOLDER=temp6-release
 TARGET_XNB_FOLDER=Terraria.v1.3.5.1/Content/Images
+
+OS=`uname`
+case "$OS" in
+    WindowsNT )
+        function wine() {
+            "$@"
+        }
+        function python() {
+            tools/python-3.7.0b1-embed-amd64/python.exe "$@"
+        }
+        function zip() {
+            ../zip "$@"
+        }
+        ;;
+esac
 
 function extractPngsFromTerraria() {
     echo "calling TExtract $1 => $2"
@@ -31,13 +49,12 @@ function removeSeparators() {
 }
 function magnifyPngs() {
     echo "magnifying images $1 => $2"
+    rm -rf $2
     mkdir -p $2
-    mkdir -p $2/UI
     mkdir -p $2/Items
-    rsync -ax --delete-after $1/ $2/Others/
-    rsync -ax --delete-after $1/UI/ $2/UI/
-    mv $2/Others/Item_* $2/Items/
-    rm -rf $2/Others/UI/
+    cp -R $1/ $2/Others/
+    mv $2/Others/UI $2/
+    mv $2/'Others/Item_*' $2/Items/
     if [ "$3" = "blend" ]; then
         wine tools/image_filter.exe "XBR" -wrap $2/Items $2
         wine tools/image_filter.exe "XBRz" $2/Others $2
@@ -66,16 +83,17 @@ function createRelease() {
     version=$1
     out_file=Images-$version.zip
     echo "Creating zip file Images-$version.zip with all XNB's"
-    mkdir -p $3/Images
     rm -f $out_file
-    rsync -ax --delete-after $2 $3
+    rm -rf $3
+    mkdir -p $3/Images
+    cp -R $2 $3
     rm -rf $3/Images/Backgrounds
     rm -rf $3/Images/Misc
     rm -rf $3/Images/UI/WorldGen
     rm -rf $3/Images/UI/Button*
     echo "Enhanced version of the textures of Terraria 1.3.5.1" > $3/README.txt
     echo "" >> $3/README.txt
-    echo "Crated by Andras Suller, `date +%F`, $version." >> $3/README.txt
+    echo "Crated by Andras Suller, `gnudate +%Y-%m-%d`, $version." >> $3/README.txt
     echo "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> $3/README.txt
     cd $3
     zip -r ../$out_file README.txt Images
