@@ -1,11 +1,14 @@
 from __future__ import print_function
+
+import sys, os
+sys.path.append(os.path.dirname(__file__))
+
 import array
 import glob
 import ntpath
 import pickle
 import png
 import re
-import sys
 import traceback
 
 from Array3D import Array3D
@@ -389,9 +392,9 @@ def get_separators_for_class(clazz, width, height):
         column = s
         row = s
     if callable(column):
-        column = [x for x in xrange(width) if column(x)]
+        column = [x for x in range(width) if column(x)]
     if callable(row):
-        row = [x for x in xrange(height) if row(x)]
+        row = [x for x in range(height) if row(x)]
     return (row, column)
 
 def is_separator_color(color):
@@ -402,13 +405,13 @@ def is_separator_color(color):
 #         return False # cannot be sure that the grid is matching
 #     total = 0
 #     match = 0
-#     for y in xrange(gridy - 1, pixelarray.height, gridy):
-#         for x in xrange(pixelarray.width):
+#     for y in range(gridy - 1, pixelarray.height, gridy):
+#         for x in range(pixelarray.width):
 #             total += 1
 #             if is_separator_color(pixelarray.getPixelAt(x, y)):
 #                 match += 1
-#         for x in xrange(gridx - 1, pixelarray.width, gridx):
-#             for yy in xrange(y - gridy + 1, y):
+#         for x in range(gridx - 1, pixelarray.width, gridx):
+#             for yy in range(y - gridy + 1, y):
 #                 total += 1
 #                 if is_separator_color(pixelarray.getPixelAt(x, yy)):
 #                     match += 1
@@ -419,13 +422,13 @@ def is_separator_color(color):
 #         return False
 
 # def detect_grid_size(pixelarray):
-#     for x in xrange(5, pixelarray.width):
+#     for x in range(5, pixelarray.width):
 #         if pixelarray.isTransparent(x, 0):
 #             continue
 #         color = pixelarray.getPixelAt(x, 0)
-#         for y in xrange(pixelarray.height):
+#         for y in range(pixelarray.height):
 #             good = True
-#             for xx in xrange(x, -1, -1):
+#             for xx in range(x, -1, -1):
 #                 if color != pixelarray.getPixelAt(xx, y):
 #                     good = False
 #                     break
@@ -439,33 +442,33 @@ def is_separator_color(color):
 #     return (0, 0)
 
 def is_column_all_separator(pixelarray, x):
-    for y in xrange(pixelarray.height):
+    for y in range(pixelarray.height):
         if not is_separator_color(pixelarray.getPixelAt(x, y)):
             return False
     return True
 
 def is_row_all_separator(pixelarray, y):
-    for x in xrange(pixelarray.width):
+    for x in range(pixelarray.width):
         if not is_separator_color(pixelarray.getPixelAt(x, y)):
             return False
     return True
 
 def detect_and_clear_separators(pixelarray):
     """ Returns: (row_indexes, column_indexes) """
-    flags = [is_column_all_separator(pixelarray, x) for x in xrange(pixelarray.width)]
-    for x in xrange(pixelarray.width):
+    flags = [is_column_all_separator(pixelarray, x) for x in range(pixelarray.width)]
+    for x in range(pixelarray.width):
         if flags[x]:
-            for y in xrange(pixelarray.height):
+            for y in range(pixelarray.height):
                 pixelarray.setPixelAt(x, y, TRANSPARENT)
 
-    column_indexes = [i - 1 for i in xrange(2, len(flags)) if not flags[i - 2] and flags[i - 1] and not flags[i]]
+    column_indexes = [i - 1 for i in range(2, len(flags)) if not flags[i - 2] and flags[i - 1] and not flags[i]]
 
-    flags = [is_row_all_separator(pixelarray, y) for y in xrange(pixelarray.height)]
-    for y in xrange(pixelarray.height):
+    flags = [is_row_all_separator(pixelarray, y) for y in range(pixelarray.height)]
+    for y in range(pixelarray.height):
         if flags[y]:
-            for x in xrange(pixelarray.width):
+            for x in range(pixelarray.width):
                 pixelarray.setPixelAt(x, y, TRANSPARENT)
-    row_indexes = [i - 1 for i in xrange(2, len(flags)) if not flags[i - 2] and flags[i - 1] and not flags[i]]
+    row_indexes = [i - 1 for i in range(2, len(flags)) if not flags[i - 2] and flags[i - 1] and not flags[i]]
 
     return (row_indexes, column_indexes)
 
@@ -476,7 +479,7 @@ def remove_separators(input_filename, clazz, pixelarray):
     # each other then both lines would remain the same color
     for x in column_indexes:
         pixels = set()
-        for y in xrange(pixelarray.height):
+        for y in range(pixelarray.height):
             if not pixelarray.isTransparent(x, y):
                 pixels.add(str(pixelarray.getPixelAt(x, y)))
                 if len(pixels) >= 3:
@@ -484,12 +487,12 @@ def remove_separators(input_filename, clazz, pixelarray):
                         # print('Wrong column index in file %s: %s, colors: %s' % (ntpath.basename(input_filename), x, pixels))
                         pixels = set()
                     else:
-                        raise Exception('Wrong column index: %s, colors: %s' % (x, pixels))
+                        raise Exception('Wrong column index: %s, colors: %s, y: %s' % (x, pixels, y))
             pixelarray.setPixelAt(x, y, TRANSPARENT)
 
     for y in row_indexes:
         pixels = set()
-        for x in xrange(pixelarray.width):
+        for x in range(pixelarray.width):
             if not pixelarray.isTransparent(x, y):
                 pixels.add(str(pixelarray.getPixelAt(x, y)))
                 if len(pixels) >= 3:
@@ -502,10 +505,10 @@ def remove_separators(input_filename, clazz, pixelarray):
     # fill the now empty separator lines with the nearest pixel
     if ntpath.basename(input_filename)[0 : 5] != 'Wall_': # don't fill for walls, it looks clunky
         for x in column_indexes:
-            for y in xrange(pixelarray.height):
+            for y in range(pixelarray.height):
                 pixelarray.setPixelAt(x, y, pixelarray.nearestNonSeparator(x, y, vertical=True))
         for y in row_indexes:
-            for x in xrange(pixelarray.width):
+            for x in range(pixelarray.width):
                 pixelarray.setPixelAt(x, y, pixelarray.nearestNonSeparator(x, y, vertical=False))
 
 def remove_separators_from_file(input_filename, output_filename):
@@ -536,8 +539,8 @@ def stats_for_file(input_filename):
     (width, height, pixels, meta) = img.asRGBA()
     data = [row for row in pixels]
     pixelarray = Array3D(data, width, height, depth=4)
-    column_indexes = [x for x in xrange(pixelarray.width) if is_column_all_separator(pixelarray, x)]
-    row_indexes = [y for y in xrange(pixelarray.height) if is_row_all_separator(pixelarray, y)]
+    column_indexes = [x for x in range(pixelarray.width) if is_column_all_separator(pixelarray, x)]
+    row_indexes = [y for y in range(pixelarray.height) if is_row_all_separator(pixelarray, y)]
     return (ntpath.basename(input_filename), width, height, row_indexes, column_indexes)
 
 def save_to_file(data, filename):

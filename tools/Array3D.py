@@ -35,15 +35,15 @@ class Array3D(object):
             raise Exception('Color len should be %d but got %d' % (self.depth, len(color)))
         if x < 0 or x >= self.width or y < 0 or y >= self.height:
             return
-        for i in xrange(self.depth):
+        for i in range(self.depth):
             if color[i] < 0 or color[i] > 255:
                 raise Exception('Invalid color component: %d' % color[i])
             self.data[y][x * self.depth + i] = color[i]
 
     def copyAndRotate(self, fromx, fromy, tox, toy, width, height, rotation):
         rotation = rotation % 4
-        for x in xrange(width):
-            for y in xrange(height):
+        for x in range(width):
+            for y in range(height):
                 if rotation == 0:
                     self.setPixelAt(tox + x, toy + y, self.getPixelAt(fromx + x, fromy + y))
                 elif rotation == 1:
