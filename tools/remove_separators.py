@@ -378,7 +378,7 @@ CLASS_SEPARATORS = {
 def get_separators_for_class(clazz, width, height):
     key = '%s-%dx%d' % (clazz, width, height)
     if key not in CLASS_SEPARATORS:
-        if clazz < 'wires':
+        if clazz < 'wires' or clazz == 'yzszgq':
             return ([], [])
         raise Exception('add "%s" to CLASS_SEPARATORS' % key)
     s = CLASS_SEPARATORS[key]
@@ -480,7 +480,7 @@ def remove_separators(input_filename, clazz, pixelarray):
             if not pixelarray.isTransparent(x, y):
                 pixels.add(str(pixelarray.getPixelAt(x, y)))
                 if len(pixels) >= 3:
-                    if ntpath.basename(input_filename) in ['Tiles_11.png', 'Tiles_19.png', 'Tiles_73.png', 'Tiles_190.png', 'Tiles_198.png', 'Tiles_222.png', 'Tiles_229.png', 'Tiles_247.png', 'Tiles_274.png', 'Tree_Branches_3.png', 'Wall_60.png', 'Wall_73.png', 'Wall_136.png']:
+                    if ntpath.basename(input_filename) in ['Tiles_11.png', 'Tiles_19.png', 'Tiles_73.png', 'Tiles_190.png', 'Tiles_198.png', 'Tiles_222.png', 'Tiles_229.png', 'Tiles_247.png', 'Tiles_274.png', 'Tree_Branches_3.png', 'Wall_60.png', 'Wall_73.png', 'Wall_136.png', 'Tiles_505.png']:
                         # print('Wrong column index in file %s: %s, colors: %s' % (ntpath.basename(input_filename), x, pixels))
                         pixels = set()
                     else:
@@ -493,7 +493,7 @@ def remove_separators(input_filename, clazz, pixelarray):
             if not pixelarray.isTransparent(x, y):
                 pixels.add(str(pixelarray.getPixelAt(x, y)))
                 if len(pixels) >= 3:
-                    if ntpath.basename(input_filename) in ['Tiles_17.png', 'Tiles_73.png', 'Tiles_126.png', 'Tiles_203.png', 'Tiles_229.png', 'Tiles_274.png', 'Tiles_32.png', 'Tiles_352.png', 'Tiles_443.png', 'Tiles_69.png', 'Wall_60.png', 'Wall_73.png']:
+                    if ntpath.basename(input_filename) in ['Tiles_17.png', 'Tiles_73.png', 'Tiles_126.png', 'Tiles_203.png', 'Tiles_229.png', 'Tiles_274.png', 'Tiles_32.png', 'Tiles_352.png', 'Tiles_443.png', 'Tiles_69.png', 'Wall_60.png', 'Wall_73.png', 'Tiles_575.png', 'Tiles_80.png']:
                         # print('Wrong row index in file %s: %s, colors: %s' % (ntpath.basename(input_filename), y, pixels))
                         pixels = set()
                     else:
@@ -654,7 +654,7 @@ def remove_separators_from_all_tiles():
             raise err
 
 def remove_separators_from_images_in_folder(input_dir, output_dir):
-    for input_filename in glob.glob('%s/*.png' % (input_dir,)):
+    for input_filename in sorted(glob.glob('%s/*.png' % (input_dir,))):
         output_filename = '%s/%s' % (output_dir, ntpath.basename(input_filename))
         try:
             remove_separators_from_file(input_filename=input_filename, output_filename=output_filename)
