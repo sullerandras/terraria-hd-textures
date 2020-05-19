@@ -88,6 +88,15 @@ function createRelease() {
     rm -rf $3/Images/UI/Button*
     echo "Enhanced version of the textures of Terraria 1.4.0.2" > $3/README.txt
     echo "" >> $3/README.txt
+    echo " {
+    "Name": "HD Textures",
+    "Author": "sullerandras",
+    "Description": "HD Textures",
+    "Version": {
+        "major": 1,
+        "minor": 0
+    }
+}" >> pack.json
     echo "Crated by Andras Suller, `date +%F`, $version." >> $3/README.txt
     echo "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> $3/README.txt
     cd $3
