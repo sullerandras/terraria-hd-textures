@@ -366,6 +366,8 @@ CLASS_SEPARATORS = {
     'wires-16x16': [],
     'wires-8x8': [],
     'wiresnew-144x144': SEP(9),
+    'wizarddefault-20x736': [],
+    'wizarddefaultparty-20x736': [],
     'wraitheyes-13x100': [],
     'xmas-32x64': [],
     'xmas-198x65': { 'column': SEP(33), 'row': [64] },

@@ -1,4 +1,4 @@
-SOURCE_XNB_FOLDER='Terraria.v1.4.0.2-read-only/Content/Images'
+SOURCE_XNB_FOLDER='Terraria.v1.4.0.3-read-only/Content/Images'
 EXTRACTED_FOLDER='temp1'
 DOWNSCALED_FOLDER='temp2'
 NO_SEPARATORS_FOLDER='temp3'
@@ -6,7 +6,7 @@ MAGNIFIED_FOLDER='temp4'
 REFILLED_FOLDER='temp5'
 RELEASE_FOLDER='temp6-release'
 TEXTURE_PACK_FOLDER='temp6-texture-pack'
-TARGET_XNB_FOLDER='Terraria.v1.4.0.2/Content/Images'
+TARGET_XNB_FOLDER='Terraria.v1.4.0.3/Content/Images'
 
 FOLDERS = [
   '',
@@ -166,4 +166,4 @@ For more information visit: http://forums.terraria.org/index.php?threads/enhance
 # refillMissingPixels(EXTRACTED_FOLDER, MAGNIFIED_FOLDER, REFILLED_FOLDER)
 # pngsToXnbs(REFILLED_FOLDER, TARGET_XNB_FOLDER)
 # createRelease('v0.10-1.4.0.2', TARGET_XNB_FOLDER, RELEASE_FOLDER)
-createTexturePack(0, 11, '1.4.0.2', REFILLED_FOLDER, TEXTURE_PACK_FOLDER)
+createTexturePack(0, 12, '1.4.0.3', REFILLED_FOLDER, TEXTURE_PACK_FOLDER)
