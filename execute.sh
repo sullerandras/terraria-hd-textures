@@ -12,7 +12,7 @@ REFILLED_FOLDER=REFILLED_FOLDER
 RELEASE_FOLDER=pack/Content
 
 function extractPngsFromTerraria() {
-    mkdir $2
+    mkdir -p $2
     echo "calling TExtract $1 => $2"
     java -jar "tools/TExtract.jar" --outputDirectory $2 $1
 }
@@ -61,7 +61,8 @@ function createRelease() {
     version=$1
     echo "Making pack folder"
     mkdir -p $3/Images
-    cp $2 $3
+    #mv -v $2 $3/Images
+    find $2 -type f -print0 | xargs -0 mv -t $3/Images
     echo "Enhanced version of the textures of Terraria 1.4.0.2" > $3/README.txt
     echo "" >> $3/README.txt
     rm pack/pack.json
