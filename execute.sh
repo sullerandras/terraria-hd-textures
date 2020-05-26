@@ -3,7 +3,7 @@
 set -e # exit on error
 set -x # echo executed lines
 
-SOURCE_XNB_FOLDER=Terraria.v1.4.0.2-read-only/Content/Images
+SOURCE_XNB_FOLDER=~/.local/share/Terraria/Content/Images
 EXTRACTED_FOLDER=temp1
 DOWNSCALED_FOLDER=temp2
 NO_SEPARATORS_FOLDER=temp3
@@ -103,12 +103,12 @@ function createRelease() {
     zip -r ../$out_file README.txt Images
     cd ..
 }
-#SOURCE_XNB_FOLDER="/home/andras/Downloads/Terraria_Soft_Pack_1-10-2016"
-# extractPngsFromTerraria $SOURCE_XNB_FOLDER $EXTRACTED_FOLDER
-# downscalePngs $EXTRACTED_FOLDER $DOWNSCALED_FOLDER
-# removeSeparators $DOWNSCALED_FOLDER $NO_SEPARATORS_FOLDER
-# magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER "blend"
-# refillMissingPixels $EXTRACTED_FOLDER $MAGNIFIED_FOLDER $REFILLED_FOLDER
+SOURCE_XNB_FOLDER="/home/andras/Downloads/Terraria_Soft_Pack_1-10-2016"
+ extractPngsFromTerraria $SOURCE_XNB_FOLDER $EXTRACTED_FOLDER
+ downscalePngs $EXTRACTED_FOLDER $DOWNSCALED_FOLDER
+ removeSeparators $DOWNSCALED_FOLDER $NO_SEPARATORS_FOLDER
+ magnifyPngs $NO_SEPARATORS_FOLDER $MAGNIFIED_FOLDER "blend"
+ refillMissingPixels $EXTRACTED_FOLDER $MAGNIFIED_FOLDER $REFILLED_FOLDER
 # pngsToXnbs $REFILLED_FOLDER $TARGET_XNB_FOLDER
 createRelease v0.10-1.4.0.2 $TARGET_XNB_FOLDER $RELEASE_FOLDER
 # createRelease v0.8-noblend-1.3.4.2 $TARGET_XNB_FOLDER $RELEASE_FOLDER
