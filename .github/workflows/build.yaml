@@ -56,7 +56,7 @@ jobs:
             (New-Item ${Env:output}$folder -ItemType directory)
             tools\image_filter.exe "XBRz" ${Env:input}$folder ${Env:output}$folder
           }
-          tools\image_filter.exe "XBRz" ${Env:input}\Items ${Env:output}\Items
+          tools\image_filter.exe "XBRz" -wrap ${Env:input}\Items ${Env:output}
         env:
           input: 'temp3'
           output: 'temp4'
