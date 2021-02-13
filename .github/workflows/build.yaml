@@ -6,6 +6,9 @@ jobs:
   build:
     runs-on: windows-latest
     env:
+      terraria_version: '1.4.1.2'
+      release_version: '0.13'
+
       folders: ",\\UI,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\Armor"
     steps:
       - uses: actions/checkout@v2
@@ -88,6 +91,24 @@ jobs:
           }
         env:
           input: 'temp5'
-          output: 'temp6'
+          output: 'Images' # this has to be Images because we use this folder name specifically in the release zip file
       - name: count-files
-        run: (Get-ChildItem temp6 -Recurse -File | Measure-Object).Count
+        run: (Get-ChildItem Images -Recurse -File | Measure-Object).Count
+
+      - name: create-release
+        run: |
+          $today = Get-Date -Format "yyyy-MM-dd"
+          "Enhanced version of the textures of Terraria ${Env:terraria_version}" > README.txt
+          "" >> README.txt
+          "Crated by Andras Suller, $today, ${Env:release_version}." >> README.txt
+          "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> README.txt
+          .\zip.exe -r Images-${Env:release_version}-${Env:terraria_version}.zip README.txt Images
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.RELEASE_GITHUB_TOKEN }}"
+          automatic_release_tag: "$release_version-$terraria_version"
+          prerelease: true
+          title: "$release_version-$terraria_version"
+          files: |
+            *.zip
