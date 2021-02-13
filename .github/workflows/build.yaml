@@ -13,12 +13,11 @@ jobs:
         with:
           python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
           architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
-      - name: test1
-        run: echo Hello
       - name: dir
         run: dir
       - name: count-files
         run: (Get-ChildItem source-pngs -Recurse -File | Measure-Object).Count
+
       - name: downscale-pngs
         run: |
           $folders = ${Env:folders} -split ','
@@ -32,6 +31,7 @@ jobs:
           output: 'temp2'
       - name: count-files
         run: (Get-ChildItem temp2 -Recurse -File | Measure-Object).Count
+
       - name: remove separators
         run: |
           $folders = ${Env:folders} -split ','
@@ -45,6 +45,7 @@ jobs:
           output: 'temp3'
       - name: count-files
         run: (Get-ChildItem temp3 -Recurse -File | Measure-Object).Count
+
       - name: magnify-pngs
         run: |
           (New-Item ${Env:input}\Items -ItemType directory)
@@ -61,3 +62,17 @@ jobs:
           output: 'temp4'
       - name: count-files
         run: (Get-ChildItem temp4 -Recurse -File | Measure-Object).Count
+
+      - name: refill-missing-pixels
+        run: |
+          $folders = ${Env:folders} -split ','
+          foreach( $folder in $folders ) {
+            echo "folder: $folder"
+            (New-Item ${Env:output}$folder -ItemType directory)
+            tools\refill_missing_pixels.exe ${Env:input}$folder ${Env:output}$folder
+          }
+        env:
+          input: 'temp4'
+          output: 'temp5'
+      - name: count-files
+        run: (Get-ChildItem temp5 -Recurse -File | Measure-Object).Count
