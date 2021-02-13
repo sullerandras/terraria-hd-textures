@@ -45,3 +45,19 @@ jobs:
           output: 'temp3'
       - name: count-files
         run: (Get-ChildItem temp3 -Recurse -File | Measure-Object).Count
+      - name: magnify-pngs
+        run: |
+          (New-Item ${Env:input}\Items -ItemType directory)
+          (Move-Item ${Env:input}\Item_* -Destination ${Env:input}\Items)
+          $folders = ${Env:folders} -split ','
+          foreach( $folder in $folders ) {
+            echo "folder: $folder"
+            (New-Item ${Env:output}$folder -ItemType directory)
+            tools\image_filter.exe "XBRz" ${Env:input}$folder ${Env:output}$folder
+          }
+          tools\image_filter.exe "XBRz" ${Env:input}\Items ${Env:output}\Items
+        env:
+          input: 'temp3'
+          output: 'temp4'
+      - name: count-files
+        run: (Get-ChildItem temp4 -Recurse -File | Measure-Object).Count
