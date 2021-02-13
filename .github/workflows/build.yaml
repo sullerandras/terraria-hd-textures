@@ -69,9 +69,10 @@ jobs:
           foreach( $folder in $folders ) {
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
-            tools\refill_missing_pixels.exe ${Env:input}$folder ${Env:output}$folder
+            tools\refill_missing_pixels.exe ${Env:original_folder}$folder ${Env:input}$folder ${Env:output}$folder
           }
         env:
+          original_folder: 'source-pngs'
           input: 'temp4'
           output: 'temp5'
       - name: count-files
