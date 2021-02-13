@@ -50,9 +50,15 @@ jobs:
         #     tools\downscale_pngs.exe $input$folder $output$folder
         #   }
         run: |
+          echo "folders: ${Env:folders}"
+          echo "input: ${Env:input}"
+          echo "output: ${Env:output}"
           $folders = [Environment]::GetEnvironmentVariable('folders', 'Machine')
           $input = [Environment]::GetEnvironmentVariable('input', 'Machine')
           $output = [Environment]::GetEnvironmentVariable('output', 'Machine')
+          echo "folders2: ${Env:folders}"
+          echo "input2: ${Env:input}"
+          echo "output2: ${Env:output}"
 
           foreach( $folder in $folders ) {
             echo "folder: $folder"
