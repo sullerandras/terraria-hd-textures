@@ -5,9 +5,10 @@ on: push
 jobs:
   build:
     runs-on: windows-latest
+    if: github.ref == 'refs/heads/setup-github-actions'
     env:
       terraria_version: '1.4.1.2'
-      release_version: '0.13'
+      release_version: 'v0.13'
 
       folders: ",\\UI,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\Armor"
     steps:
@@ -107,8 +108,8 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.RELEASE_GITHUB_TOKEN }}"
-          automatic_release_tag: "$release_version-$terraria_version"
+          automatic_release_tag: "${{ env.release_version }}-${{ env.terraria_version }}"
           prerelease: true
-          title: "$release_version-$terraria_version"
+          title: "${{ env.release_version }}-${{ env.terraria_version }}"
           files: |
             *.zip
