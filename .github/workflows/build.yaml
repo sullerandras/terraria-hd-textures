@@ -11,3 +11,5 @@ jobs:
         run: echo Hello
       - name: dir
         run: dir
+      - name: count-files
+        run: (Get-ChildItem source-pngs -Recurse -File | Measure-Object).Count
