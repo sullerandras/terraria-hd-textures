@@ -9,56 +9,39 @@ jobs:
       folders: ",\\UI,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\Armor"
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
       - name: test1
         run: echo Hello
       - name: dir
         run: dir
       - name: count-files
         run: (Get-ChildItem source-pngs -Recurse -File | Measure-Object).Count
-      - name: downscale-pngs
-        # run: |
-        #   $folders = '',
-        #     '\UI',
-        #     '\UI\WorldGen',
-        #     '\UI\PlayerResourceSets',
-        #     '\UI\PlayerResourceSets\HorizontalBars',
-        #     '\UI\PlayerResourceSets\FancyClassic',
-        #     '\UI\CharCreation',
-        #     '\UI\WorldCreation',
-        #     '\UI\Minimap',
-        #     '\UI\Minimap\Leaf',
-        #     '\UI\Minimap\StoneGold',
-        #     '\UI\Minimap\Golden',
-        #     '\UI\Minimap\Default',
-        #     '\UI\Minimap\Valkyrie',
-        #     '\UI\Minimap\TwigLeaf',
-        #     '\UI\Minimap\Sticks',
-        #     '\UI\Minimap\Retro',
-        #     '\UI\Minimap\Remix',
-        #     '\UI\Bestiary',
-        #     '\UI\Bestiary\NPCs',
-        #     '\UI\Creative',
-        #     '\Accessories',
-        #     '\TownNPCs',
-        #     '\Armor'
-
-        #   $input = 'source-pngs'
-        #   $output = 'temp2'
-        #   foreach( $folder in $folders ) {
-        #     echo "folder: $folder"
-        #     (New-Item $output$folder -ItemType directory)
-        #     tools\downscale_pngs.exe $input$folder $output$folder
-        #   }
+      # - name: downscale-pngs
+      #   run: |
+      #     $folders = ${Env:folders} -split ','
+      #     foreach( $folder in $folders ) {
+      #       echo "folder: $folder"
+      #       (New-Item ${Env:output}$folder -ItemType directory)
+      #       tools\downscale_pngs.exe ${Env:input}$folder ${Env:output}$folder
+      #     }
+      #   env:
+      #     input: 'source-pngs'
+      #     output: 'temp2'
+      # - name: count-files
+      #   run: (Get-ChildItem temp2 -Recurse -File | Measure-Object).Count
+      - name: remove separators
         run: |
           $folders = ${Env:folders} -split ','
-
           foreach( $folder in $folders ) {
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
-            tools\downscale_pngs.exe ${Env:input}$folder ${Env:output}$folder
+            python tools\remove_separators.py ${Env:input}$folder ${Env:output}$folder
           }
         env:
-          input: 'source-pngs'
-          output: 'temp2'
+          input: 'temp2'
+          output: 'temp3'
       - name: count-files
-        run: (Get-ChildItem temp2 -Recurse -File | Measure-Object).Count
+        run: (Get-ChildItem temp3 -Recurse -File | Measure-Object).Count
