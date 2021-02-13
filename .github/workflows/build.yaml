@@ -19,19 +19,19 @@ jobs:
         run: dir
       - name: count-files
         run: (Get-ChildItem source-pngs -Recurse -File | Measure-Object).Count
-      # - name: downscale-pngs
-      #   run: |
-      #     $folders = ${Env:folders} -split ','
-      #     foreach( $folder in $folders ) {
-      #       echo "folder: $folder"
-      #       (New-Item ${Env:output}$folder -ItemType directory)
-      #       tools\downscale_pngs.exe ${Env:input}$folder ${Env:output}$folder
-      #     }
-      #   env:
-      #     input: 'source-pngs'
-      #     output: 'temp2'
-      # - name: count-files
-      #   run: (Get-ChildItem temp2 -Recurse -File | Measure-Object).Count
+      - name: downscale-pngs
+        run: |
+          $folders = ${Env:folders} -split ','
+          foreach( $folder in $folders ) {
+            echo "folder: $folder"
+            (New-Item ${Env:output}$folder -ItemType directory)
+            tools\downscale_pngs.exe ${Env:input}$folder ${Env:output}$folder
+          }
+        env:
+          input: 'source-pngs'
+          output: 'temp2'
+      - name: count-files
+        run: (Get-ChildItem temp2 -Recurse -File | Measure-Object).Count
       - name: remove separators
         run: |
           $folders = ${Env:folders} -split ','
