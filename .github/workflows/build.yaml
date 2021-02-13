@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: windows-latest
     env:
-      folders: "'', '\\UI', '\\UI\\Minimap\\Golden'"
+      folders: "'','\\UI','\\UI\\Minimap\\Golden'"
     steps:
       - uses: actions/checkout@v2
       - name: test1
@@ -53,9 +53,9 @@ jobs:
           echo "folders: ${Env:folders}"
           echo "input: ${Env:input}"
           echo "output: ${Env:output}"
-          $folders = [Environment]::GetEnvironmentVariable('folders', 'Machine')
-          $input = [Environment]::GetEnvironmentVariable('input', 'Machine')
-          $output = [Environment]::GetEnvironmentVariable('output', 'Machine')
+          $folders = ${Env:folders} -split ','
+          $input = ${Env:input}
+          $output = ${Env:output}
           echo "folders2: ${Env:folders}"
           echo "input2: ${Env:input}"
           echo "output2: ${Env:output}"
