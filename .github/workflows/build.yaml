@@ -104,10 +104,10 @@ jobs:
           "Crated by Andras Suller, $today, ${Env:release_version}." >> README.txt
           "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> README.txt
 
-          rmdir -r Images\Backgrounds
-          rmdir -r Images\Misc
-          rmdir -r Images\UI\WorldGen
-          rmdir Images\UI\Button*
+          rmdir -r Images\Backgrounds -ErrorAction:SilentlyContinue
+          rmdir -r Images\Misc -ErrorAction:SilentlyContinue
+          rmdir -r Images\UI\WorldGen -ErrorAction:SilentlyContinue
+          rmdir Images\UI\Button* -ErrorAction:SilentlyContinue
 
           .\zip.exe -r Images-${Env:release_version}-${Env:terraria_version}.zip README.txt Images
 
@@ -118,10 +118,10 @@ jobs:
           mv ${Env:input} Content
           mv Content\${Env:input} Content\Images
 
-          rmdir -r Content\Images\Backgrounds
-          rmdir -r Content\Images\Misc
-          rmdir -r Content\Images\UI\WorldGen
-          rmdir Content\Images\UI\Button*
+          rmdir -r Content\Images\Backgrounds -ErrorAction:SilentlyContinue
+          rmdir -r Content\Images\Misc -ErrorAction:SilentlyContinue
+          rmdir -r Content\Images\UI\WorldGen -ErrorAction:SilentlyContinue
+          rmdir Content\Images\UI\Button* -ErrorAction:SilentlyContinue
 
           $major_version = ${Env:release_version}.Split('.')[0] -replace 'v', ''
           $minor_version = ${Env:release_version}.Split('.')[1]
