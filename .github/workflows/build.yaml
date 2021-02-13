@@ -113,7 +113,7 @@ jobs:
 
       - name: create-texture-pack-release
         run: |
-          version = "${Env:release_version}-${Env:terraria_version}"
+          $version = "${Env:release_version}-${Env:terraria_version}"
           (New-Item Content -ItemType directory)
           mv ${Env:input} Content
           mv Content\${Env:input} Content\Images
