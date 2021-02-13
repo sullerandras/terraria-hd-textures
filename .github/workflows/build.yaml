@@ -1,0 +1,12 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: test1
+        run: echo Hello
+      - name: dir
+        run: dir
