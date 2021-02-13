@@ -47,3 +47,5 @@ jobs:
             (New-Item $output$folder -ItemType directory)
             tools\downscale_pngs.exe $input$folder $output$folder
           }
+      - name: count-files
+        run: (Get-ChildItem temp2 -Recurse -File | Measure-Object).Count
