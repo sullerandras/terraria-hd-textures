@@ -1,0 +1,150 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/setup-github-actions'
+    env:
+      terraria_version: '1.4.1.2'
+      release_version: 'v0.13'
+
+      folders: ",\\UI,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\Armor"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '2.7' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+      - name: dir
+        run: dir
+      - name: count-files
+        run: (Get-ChildItem source-pngs -Recurse -File | Measure-Object).Count
+
+      - name: downscale-pngs
+        run: |
+          $folders = ${Env:folders} -split ','
+          foreach( $folder in $folders ) {
+            echo "folder: $folder"
+            (New-Item ${Env:output}$folder -ItemType directory)
+            tools\downscale_pngs.exe ${Env:input}$folder ${Env:output}$folder
+          }
+        env:
+          input: 'source-pngs'
+          output: 'temp2'
+      - name: count-files
+        run: (Get-ChildItem temp2 -Recurse -File | Measure-Object).Count
+
+      - name: remove separators
+        run: |
+          $folders = ${Env:folders} -split ','
+          foreach( $folder in $folders ) {
+            echo "folder: $folder"
+            (New-Item ${Env:output}$folder -ItemType directory)
+            python tools\remove_separators.py ${Env:input}$folder ${Env:output}$folder
+          }
+        env:
+          input: 'temp2'
+          output: 'temp3'
+      - name: count-files
+        run: (Get-ChildItem temp3 -Recurse -File | Measure-Object).Count
+
+      - name: magnify-pngs
+        run: |
+          (New-Item ${Env:input}\Items -ItemType directory)
+          (Move-Item ${Env:input}\Item_* -Destination ${Env:input}\Items)
+          $folders = ${Env:folders} -split ','
+          foreach( $folder in $folders ) {
+            echo "folder: $folder"
+            (New-Item ${Env:output}$folder -ItemType directory)
+            tools\image_filter.exe "XBRz" ${Env:input}$folder ${Env:output}$folder
+          }
+          tools\image_filter.exe "XBRz" -wrap ${Env:input}\Items ${Env:output}
+        env:
+          input: 'temp3'
+          output: 'temp4'
+      - name: count-files
+        run: (Get-ChildItem temp4 -Recurse -File | Measure-Object).Count
+
+      - name: refill-missing-pixels
+        run: |
+          $folders = ${Env:folders} -split ','
+          foreach( $folder in $folders ) {
+            echo "folder: $folder"
+            (New-Item ${Env:output}$folder -ItemType directory)
+            tools\refill_missing_pixels.exe ${Env:original_folder}$folder ${Env:input}$folder ${Env:output}$folder
+          }
+        env:
+          original_folder: 'source-pngs'
+          input: 'temp4'
+          output: 'temp5'
+      - name: count-files
+        run: (Get-ChildItem temp5 -Recurse -File | Measure-Object).Count
+
+      - name: png-to-xnb
+        run: |
+          $folders = ${Env:folders} -split ','
+          foreach( $folder in $folders ) {
+            echo "folder: $folder"
+            (New-Item ${Env:output}$folder -ItemType directory)
+            tools\png_to_xnb.exe ${Env:input}$folder ${Env:output}$folder
+          }
+        env:
+          input: 'temp5'
+          output: 'Images' # this has to be Images because we use this folder name specifically in the release zip file
+      - name: count-files
+        run: (Get-ChildItem Images -Recurse -File | Measure-Object).Count
+
+      - name: create-zip-release
+        run: |
+          $today = Get-Date -Format "yyyy-MM-dd"
+          "Enhanced version of the textures of Terraria ${Env:terraria_version}" > README.txt
+          "" >> README.txt
+          "Crated by Andras Suller, $today, ${Env:release_version}." >> README.txt
+          "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> README.txt
+
+          rmdir -r Images\Backgrounds -ErrorAction:SilentlyContinue
+          rmdir -r Images\Misc -ErrorAction:SilentlyContinue
+          rmdir -r Images\UI\WorldGen -ErrorAction:SilentlyContinue
+          rmdir Images\UI\Button* -ErrorAction:SilentlyContinue
+
+          .\zip.exe -r Images-${Env:release_version}-${Env:terraria_version}.zip README.txt Images
+
+      - name: create-texture-pack-release
+        run: |
+          $version = "${Env:release_version}-${Env:terraria_version}"
+          (New-Item Content -ItemType directory)
+          mv ${Env:input} Content
+          mv Content\${Env:input} Content\Images
+
+          rmdir -r Content\Images\Backgrounds -ErrorAction:SilentlyContinue
+          rmdir -r Content\Images\Misc -ErrorAction:SilentlyContinue
+          rmdir -r Content\Images\UI\WorldGen -ErrorAction:SilentlyContinue
+          rmdir Content\Images\UI\Button* -ErrorAction:SilentlyContinue
+
+          $major_version = ${Env:release_version}.Split('.')[0] -replace 'v', ''
+          $minor_version = ${Env:release_version}.Split('.')[1]
+
+          "{" > pack.json
+          "    `"Name`": `"HD Textures $version`"," >> pack.json
+          "    `"Author`": `"Andras Suller`"," >> pack.json
+          "    `"Description`": `"HD Textures $version`"," >> pack.json
+          "    `"Version`": {" >> pack.json
+          "        `"major`": $major_version," >> pack.json
+          "        `"minor`": $minor_version" >> pack.json
+          "    }" >> pack.json
+          "}" >> pack.json
+
+          .\zip.exe -r TexturePack-$version.zip README.txt Content pack.json
+        env:
+          input: 'temp5'
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.RELEASE_GITHUB_TOKEN }}"
+          automatic_release_tag: "${{ env.release_version }}-${{ env.terraria_version }}"
+          prerelease: true
+          title: "${{ env.release_version }}-${{ env.terraria_version }}"
+          files: |
+            *.zip
