@@ -5,10 +5,10 @@ on: push
 jobs:
   build:
     runs-on: windows-latest
-    if: github.ref == 'refs/heads/v1.4.3.2'
+    if: github.ref == 'refs/heads/v1.4.3.6'
     env:
-      terraria_version: '1.4.3.2'
-      release_version: 'v0.14'
+      terraria_version: '1.4.3.6'
+      release_version: 'v0.15'
 
       folders: ",\\UI,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\Armor"
     steps:
