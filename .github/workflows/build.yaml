@@ -12,10 +12,10 @@ jobs:
 
       folders: ",\\UI,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\Armor"
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
-          python-version: '2.7' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
           architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
       - name: dir
         run: dir
