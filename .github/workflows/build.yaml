@@ -5,7 +5,7 @@ on: push
 jobs:
   build:
     runs-on: windows-latest
-    # if: github.ref == 'refs/heads/v1.4.4.6'
+    if: github.ref == 'refs/heads/v1.4.4.6'
     env:
       terraria_version: '1.4.4.6'
       release_version: 'v0.16'
