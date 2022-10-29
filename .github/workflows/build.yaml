@@ -43,6 +43,9 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             python tools\remove_separators.py ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
         env:
           input: 'temp2'
