@@ -29,6 +29,9 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             tools\downscale_pngs.exe ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
         env:
           input: 'source-pngs'
@@ -62,8 +65,14 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             tools\image_filter.exe "XBRz" ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
           tools\image_filter.exe "XBRz" -wrap ${Env:input}\Items ${Env:output}
+          if ($lastexitcode -ne 0) {
+            throw ("Exec: " + $errorMessage)
+          }
         env:
           input: 'temp3'
           output: 'temp4'
@@ -77,6 +86,9 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             tools\refill_missing_pixels.exe ${Env:original_folder}$folder ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
         env:
           original_folder: 'source-pngs'
@@ -92,6 +104,9 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             tools\png_to_xnb.exe ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
         env:
           input: 'temp5'
