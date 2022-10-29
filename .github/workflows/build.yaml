@@ -99,49 +99,49 @@ jobs:
       - name: count-files
         run: (Get-ChildItem Images -Recurse -File | Measure-Object).Count
 
-      - name: create-zip-release
-        run: |
-          $today = Get-Date -Format "yyyy-MM-dd"
-          "Enhanced version of the textures of Terraria ${Env:terraria_version}" > README.txt
-          "" >> README.txt
-          "Crated by Andras Suller, $today, ${Env:release_version}." >> README.txt
-          "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> README.txt
+      # - name: create-zip-release
+      #   run: |
+      #     $today = Get-Date -Format "yyyy-MM-dd"
+      #     "Enhanced version of the textures of Terraria ${Env:terraria_version}" > README.txt
+      #     "" >> README.txt
+      #     "Crated by Andras Suller, $today, ${Env:release_version}." >> README.txt
+      #     "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> README.txt
 
-          rmdir -r Images\Backgrounds -ErrorAction:SilentlyContinue
-          rmdir -r Images\Misc -ErrorAction:SilentlyContinue
-          rmdir -r Images\UI\WorldGen -ErrorAction:SilentlyContinue
-          rmdir Images\UI\Button* -ErrorAction:SilentlyContinue
+      #     rmdir -r Images\Backgrounds -ErrorAction:SilentlyContinue
+      #     rmdir -r Images\Misc -ErrorAction:SilentlyContinue
+      #     rmdir -r Images\UI\WorldGen -ErrorAction:SilentlyContinue
+      #     rmdir Images\UI\Button* -ErrorAction:SilentlyContinue
 
-          .\zip.exe -r Images-${Env:release_version}-${Env:terraria_version}.zip README.txt Images
+      #     .\zip.exe -r Images-${Env:release_version}-${Env:terraria_version}.zip README.txt Images
 
-      - name: create-texture-pack-release
-        run: |
-          $version = "${Env:release_version}-${Env:terraria_version}"
-          (New-Item Content -ItemType directory)
-          mv ${Env:input} Content
-          mv Content\${Env:input} Content\Images
+      # - name: create-texture-pack-release
+      #   run: |
+      #     $version = "${Env:release_version}-${Env:terraria_version}"
+      #     (New-Item Content -ItemType directory)
+      #     mv ${Env:input} Content
+      #     mv Content\${Env:input} Content\Images
 
-          rmdir -r Content\Images\Backgrounds -ErrorAction:SilentlyContinue
-          rmdir -r Content\Images\Misc -ErrorAction:SilentlyContinue
-          rmdir -r Content\Images\UI\WorldGen -ErrorAction:SilentlyContinue
-          rmdir Content\Images\UI\Button* -ErrorAction:SilentlyContinue
+      #     rmdir -r Content\Images\Backgrounds -ErrorAction:SilentlyContinue
+      #     rmdir -r Content\Images\Misc -ErrorAction:SilentlyContinue
+      #     rmdir -r Content\Images\UI\WorldGen -ErrorAction:SilentlyContinue
+      #     rmdir Content\Images\UI\Button* -ErrorAction:SilentlyContinue
 
-          $major_version = ${Env:release_version}.Split('.')[0] -replace 'v', ''
-          $minor_version = ${Env:release_version}.Split('.')[1]
+      #     $major_version = ${Env:release_version}.Split('.')[0] -replace 'v', ''
+      #     $minor_version = ${Env:release_version}.Split('.')[1]
 
-          "{" > pack.json
-          "    `"Name`": `"HD Textures $version`"," >> pack.json
-          "    `"Author`": `"Andras Suller`"," >> pack.json
-          "    `"Description`": `"HD Textures $version`"," >> pack.json
-          "    `"Version`": {" >> pack.json
-          "        `"major`": $major_version," >> pack.json
-          "        `"minor`": $minor_version" >> pack.json
-          "    }" >> pack.json
-          "}" >> pack.json
+      #     "{" > pack.json
+      #     "    `"Name`": `"HD Textures $version`"," >> pack.json
+      #     "    `"Author`": `"Andras Suller`"," >> pack.json
+      #     "    `"Description`": `"HD Textures $version`"," >> pack.json
+      #     "    `"Version`": {" >> pack.json
+      #     "        `"major`": $major_version," >> pack.json
+      #     "        `"minor`": $minor_version" >> pack.json
+      #     "    }" >> pack.json
+      #     "}" >> pack.json
 
-          .\zip.exe -r TexturePack-$version.zip README.txt Content pack.json
-        env:
-          input: 'temp5'
+      #     .\zip.exe -r TexturePack-$version.zip README.txt Content pack.json
+      #   env:
+      #     input: 'temp5'
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
