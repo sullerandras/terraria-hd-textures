@@ -366,6 +366,7 @@ CLASS_SEPARATORS = {
     'wires-16x16': [],
     'wires-8x8': [],
     'wiresnew-144x144': SEP(9),
+    'witchdoctordefault-25x728': SEP(28),
     'wizarddefault-20x736': [],
     'wizarddefaultparty-20x736': [],
     'wraitheyes-13x100': [],
@@ -495,7 +496,7 @@ def remove_separators(input_filename, clazz, pixelarray):
             if not pixelarray.isTransparent(x, y):
                 pixels.add(str(pixelarray.getPixelAt(x, y)))
                 if len(pixels) >= 3:
-                    if ntpath.basename(input_filename) in ['Tiles_17.png', 'Tiles_73.png', 'Tiles_126.png', 'Tiles_203.png', 'Tiles_229.png', 'Tiles_274.png', 'Tiles_32.png', 'Tiles_352.png', 'Tiles_443.png', 'Tiles_69.png', 'Wall_60.png', 'Wall_73.png', 'Tiles_575.png', 'Tiles_80.png']:
+                    if ntpath.basename(input_filename) in ['Tiles_17.png', 'Tiles_73.png', 'Tiles_126.png', 'Tiles_203.png', 'Tiles_229.png', 'Tiles_274.png', 'Tiles_32.png', 'Tiles_352.png', 'Tiles_443.png', 'Tiles_69.png', 'Wall_60.png', 'Wall_73.png', 'Tiles_575.png', 'Tiles_80.png', 'Tiles_655.png']:
                         # print('Wrong row index in file %s: %s, colors: %s' % (ntpath.basename(input_filename), y, pixels))
                         pixels = set()
                     else:

@@ -5,12 +5,12 @@ on: push
 jobs:
   build:
     runs-on: windows-latest
-    if: github.ref == 'refs/heads/v1.4.4.6'
+    if: github.ref == 'refs/heads/fix-build'
     env:
       terraria_version: '1.4.4.6'
-      release_version: 'v0.16'
+      release_version: 'v0.16.1'
 
-      folders: ",\\UI,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\Armor"
+      folders: ",\\UI,\\UI\\Workshop,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\TownNPCs\\Shimmered,\\Armor"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -29,6 +29,9 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             tools\downscale_pngs.exe ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
         env:
           input: 'source-pngs'
@@ -43,6 +46,9 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             python tools\remove_separators.py ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
         env:
           input: 'temp2'
@@ -59,8 +65,14 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             tools\image_filter.exe "XBRz" ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
           tools\image_filter.exe "XBRz" -wrap ${Env:input}\Items ${Env:output}
+          if ($lastexitcode -ne 0) {
+            throw ("Exec: " + $errorMessage)
+          }
         env:
           input: 'temp3'
           output: 'temp4'
@@ -74,6 +86,9 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             tools\refill_missing_pixels.exe ${Env:original_folder}$folder ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
         env:
           original_folder: 'source-pngs'
@@ -89,6 +104,9 @@ jobs:
             echo "folder: $folder"
             (New-Item ${Env:output}$folder -ItemType directory)
             tools\png_to_xnb.exe ${Env:input}$folder ${Env:output}$folder
+            if ($lastexitcode -ne 0) {
+              throw ("Exec: " + $errorMessage)
+            }
           }
         env:
           input: 'temp5'
