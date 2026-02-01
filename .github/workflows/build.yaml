@@ -5,12 +5,12 @@ on: push
 jobs:
   build:
     runs-on: windows-latest
-    if: github.ref == 'refs/heads/terraria-1.4.5'
+    if: github.ref == 'refs/heads/npc-portraits'
     env:
       terraria_version: '1.4.5'
-      release_version: 'v0.16.3'
+      release_version: 'v0.16.4'
 
-      folders: ",\\UI,\\UI\\Workshop,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\TownNPCs\\Shimmered,\\Armor"
+      folders: ",\\UI,\\UI\\Workshop,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\TownNPCs\\Portraits,\\TownNPCs\\Shimmered,\\Armor"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -120,7 +120,7 @@ jobs:
           "Enhanced version of the textures of Terraria ${Env:terraria_version}" > README.txt
           "" >> README.txt
           "Crated by Andras Suller, $today, ${Env:release_version}." >> README.txt
-          "For more information visit: http://forums.terraria.org/index.php?threads/enhanced-version-of-the-textures-of-terraria-1-3-0-8.39115/" >> README.txt
+          "For more information visit: https://forums.terraria.org/index.php?threads/high-definition-version-of-all-textures-up-to-terraria-1-4-5.39115/" >> README.txt
 
           rmdir -r Images\Backgrounds -ErrorAction:SilentlyContinue
           rmdir -r Images\Misc -ErrorAction:SilentlyContinue
