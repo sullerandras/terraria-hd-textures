@@ -4,18 +4,23 @@ on:
   push:
     tags: ['v*']
 
+# Default-deny: each job must declare the permissions it needs.
+permissions: {}
+
 jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: write
+      contents: read
     env:
       release_version: ${{ github.ref_name }} # the pushed tag, e.g. v0.18.0-1.4.6.1
 
       folders: ",\\UI,\\UI\\Workshop,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\TownNPCs\\Portraits,\\TownNPCs\\Shimmered,\\Armor,\\UI\\MultiplayerLobby"
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
           architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
@@ -136,13 +141,33 @@ jobs:
 
           .\zip.exe -r Images-${Env:release_version}.zip README.txt Images
 
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-zip
+          path: Images-${{ github.ref_name }}.zip
+          if-no-files-found: error
+          retention-days: 1
+
+  # Only this job gets write access, and it runs no third-party code
+  # besides download-artifact.
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-zip
+
       - name: publish-release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
         run: |
-          $tag = ${Env:release_version}
-          gh release create $tag "Images-$tag.zip" `
-            --title $tag `
-            --generate-notes `
-            --prerelease `
+          gh release create "$TAG" "Images-$TAG.zip" \
+            --title "$TAG" \
+            --generate-notes \
+            --prerelease \
             --draft
