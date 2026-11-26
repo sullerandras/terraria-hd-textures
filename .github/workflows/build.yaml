@@ -1,16 +1,16 @@
 name: Build
 
-on: push
+on:
+  push:
+    tags: ['v*']
 
 jobs:
   build:
     runs-on: windows-latest
     permissions:
       contents: write
-    if: github.ref == 'refs/heads/terraria-1.4.6.1'
     env:
-      terraria_version: '1.4.6.1'
-      release_version: 'v0.18.0'
+      release_version: ${{ github.ref_name }} # the pushed tag, e.g. v0.18.0-1.4.6.1
 
       folders: ",\\UI,\\UI\\Workshop,\\UI\\WorldGen,\\UI\\PlayerResourceSets,\\UI\\PlayerResourceSets\\HorizontalBars,\\UI\\PlayerResourceSets\\FancyClassic,\\UI\\CharCreation,\\UI\\WorldCreation,\\UI\\Minimap,\\UI\\Minimap\\Leaf,\\UI\\Minimap\\StoneGold,\\UI\\Minimap\\Golden,\\UI\\Minimap\\Default,\\UI\\Minimap\\Valkyrie,\\UI\\Minimap\\TwigLeaf,\\UI\\Minimap\\Sticks,\\UI\\Minimap\\Retro,\\UI\\Minimap\\Remix,\\UI\\Bestiary,\\UI\\Bestiary\\NPCs,\\UI\\Creative,\\Accessories,\\TownNPCs,\\TownNPCs\\Portraits,\\TownNPCs\\Shimmered,\\Armor,\\UI\\MultiplayerLobby"
     steps:
@@ -118,10 +118,15 @@ jobs:
 
       - name: create-zip-release
         run: |
+          # The tag looks like <pack version>-<terraria version>, e.g. v0.18.0-1.4.6.1
+          $pack_version, $terraria_version = ${Env:release_version}.Split('-', 2)
+          if (-not $terraria_version) {
+            throw "Tag '${Env:release_version}' must look like v0.18.0-1.4.6.1"
+          }
           $today = Get-Date -Format "yyyy-MM-dd"
-          "Enhanced version of the textures of Terraria ${Env:terraria_version}" > README.txt
+          "Enhanced version of the textures of Terraria $terraria_version" > README.txt
           "" >> README.txt
-          "Crated by Andras Suller, $today, ${Env:release_version}." >> README.txt
+          "Created by Andras Suller, $today, $pack_version." >> README.txt
           "For more information visit: https://forums.terraria.org/index.php?threads/high-definition-version-of-all-textures-up-to-terraria-1-4-5-8.39115/" >> README.txt
 
           rmdir -r Images\Backgrounds -ErrorAction:SilentlyContinue
@@ -129,14 +134,15 @@ jobs:
           rmdir -r Images\UI\WorldGen -ErrorAction:SilentlyContinue
           rmdir Images\UI\Button* -ErrorAction:SilentlyContinue
 
-          .\zip.exe -r Images-${Env:release_version}-${Env:terraria_version}.zip README.txt Images
+          .\zip.exe -r Images-${Env:release_version}.zip README.txt Images
 
       - name: publish-release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $tag = "${Env:release_version}-${Env:terraria_version}"
+          $tag = ${Env:release_version}
           gh release create $tag "Images-$tag.zip" `
             --title $tag `
-            --target ${{ github.sha }} `
-            --prerelease
+            --generate-notes `
+            --prerelease `
+            --draft
